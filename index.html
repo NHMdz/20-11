@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Letter</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif}
+body{
+  background:#ffd6e8 url("https://png.pngtree.com/background/20230528/original/pngtree-beautiful-pink-peonies-on-a-soft-paper-background-picture-image_2782772.jpg");
+  background-size:cover;
+  background-position:center;
+  overflow:hidden;
+}
+
+#wrapper{width:auto;margin:auto}
+.envelope{
+  width:200px;height:100px;margin:0 auto;background:#ddd;
+  box-shadow:0 0 1px rgba(0,0,0,.5),0 1px 3px rgba(0,0,0,.25);
+  position:relative;perspective:800px;
+}
+.envelope:after{
+  content:"";position:absolute;top:0;left:0;width:0;height:0;
+  border:45px 100px solid rgba(0,0,0,.25);border-top-color:transparent;z-index:2;
+}
+.envelope .flap{position:absolute;width:100%;height:0;border:50px 100px solid transparent;z-index:3}
+.envelope .flap.front{border-left-color:#eee;border-right-color:#eee;border-bottom-color:#ccc}
+.envelope .flap.front:after{
+  content:"";width:100%;height:0;position:absolute;left:-100px;bottom:-50px;
+  border:49px 100px solid transparent;border-bottom-color:#eee;
+}
+.envelope .flap.top{
+  border-top-width:55px;border-top-color:#aaa;z-index:3;
+  animation-duration:1s;animation-delay:1s;animation-fill-mode:forwards;
+  transform-origin:top;transform-style:preserve-3d;
+}
+.envelope.open .flap.top{animation-name:flip}
+
+.envelope .letter{
+  position:absolute;width:194px;height:84px;top:8px;left:3px;z-index:1;
+  border:1px solid #ccc;background-size:cover;background-position:center;
+  animation:remove 2s 1.5s forwards;transform-style:preserve-3d
+}
+.envelope.open .letter{animation-name:remove}
+
+@keyframes flip{100%{transform:rotateX(180deg);z-index:1}}
+@keyframes remove{50%{top:-120px}100%{top:8px;z-index:5}}
+
+.pop-up{margin-top:-100px;animation:drop 1s ease forwards}
+@keyframes drop{100%{transform:translateY(300px);opacity:1}}
+
+#pages{
+  width:300px;height:420px;margin:40px auto;background:white;
+  border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);
+  display:flex;justify-content:center;align-items:center;
+  font-size:20px;text-align:center;padding:20px;opacity:0;
+  transition:.5s;cursor:pointer;user-select:none;z-index:10;
+}
+#pages.show{opacity:1}
+
+.confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+</style>
+</head>
+<body>
+
+<canvas class="confetti" id="confetti"></canvas>
+
+<div class="pop-up">
+  <div id="wrapper">
+    <div class="envelope open">
+      <div class="flap front"></div>
+      <div class="flap top"></div>
+      <div class="letter" id="letter-img"></div>
+    </div>
+  </div>
+</div>
+
+<div id="pages"></div>
+
+<script>
+let imgs=[
+  "https://img.meta.com.vn/Data/image/2021/10/23/nhung-cau-chuc-20-11-3.jpg",
+  "https://i.pinimg.com/736x/3a/d1/10/3ad11028c6f7ca61bcd2816e6ead3979.jpg",
+  "https://i.pinimg.com/736x/61/2b/f0/612bf089344f5775a3a32f1464cb147f.jpg"
+]
+let texts=[
+  "Nhân ngày 20/11, chúc cô Thầy luôn mạnh khỏe!",
+  "Cảm ơn Thầy và Cô vì đã dạy dỗ chúng em!",
+  "Chúc Thầy Cô mãi hạnh phúc và thành công!"
+]
+
+let page=0
+let total=imgs.length
+let letter=document.getElementById("letter-img")
+let box=document.getElementById("pages")
+letter.style.backgroundImage=`url(${imgs[0]})`
+
+setTimeout(()=>{box.classList.add("show");box.innerHTML=texts[0]},3500)
+
+box.onclick=function(){
+  page++
+  if(page>=total){box.classList.remove("show");return}
+  letter.style.backgroundImage=`url(${imgs[page]})`
+  box.innerHTML=texts[page]
+}
+
+const confettiCanvas=document.getElementById("confetti")
+const ctx=confettiCanvas.getContext("2d")
+let W=window.innerWidth,H=window.innerHeight
+confettiCanvas.width=W;confettiCanvas.height=H
+let particles=[]
+
+for(let i=0;i<200;i++){
+  particles.push({
+    x:Math.random()*W,
+    y:Math.random()*H,
+    r:Math.random()*4+1,
+    d:Math.random()*200
+  })
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H)
+  ctx.fillStyle="rgba(255,255,255,.9)"
+  particles.forEach(p=>{
+    ctx.beginPath()
+    ctx.moveTo(p.x,p.y)
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2)
+    ctx.fill()
+  })
+  update()
+}
+
+let angle=0
+function update(){
+  angle+=0.01
+  particles.forEach(p=>{
+    p.y+=Math.cos(angle+p.d)+1+p.r/2
+    p.x+=Math.sin(angle)*2
+    if(p.y>H){p.y=-10;p.x=Math.random()*W}
+  })
+}
+
+setInterval(draw,15)
+</script>
+</body>
+</html>
