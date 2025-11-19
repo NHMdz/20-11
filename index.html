@@ -39,7 +39,7 @@ body{
 .envelope .letter{
   position:absolute;width:194px;height:84px;top:8px;left:3px;z-index:1;
   border:1px solid #ccc;background-size:cover;background-position:center;
-  animation:remove 2s 1.5s forwards;transform-style:preserve-3d
+  animation:remove 2s 1.5s forwards;transform-style:preserve-3d;
 }
 .envelope.open .letter{animation-name:remove}
 
@@ -48,15 +48,6 @@ body{
 
 .pop-up{margin-top:-100px;animation:drop 1s ease forwards}
 @keyframes drop{100%{transform:translateY(300px);opacity:1}}
-
-#pages{
-  width:300px;height:420px;margin:40px auto;background:white;
-  border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.2);
-  display:flex;justify-content:center;align-items:center;
-  font-size:20px;text-align:center;padding:20px;opacity:0;
-  transition:.5s;cursor:pointer;user-select:none;z-index:10;
-}
-#pages.show{opacity:1}
 
 .confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
 </style>
@@ -67,7 +58,7 @@ body{
 
 <div class="pop-up">
   <div id="wrapper">
-    <div class="envelope open">
+    <div class="envelope open" id="env">
       <div class="flap front"></div>
       <div class="flap top"></div>
       <div class="letter" id="letter-img"></div>
@@ -75,33 +66,22 @@ body{
   </div>
 </div>
 
-<div id="pages"></div>
-
 <script>
 let imgs=[
   "https://img.meta.com.vn/Data/image/2021/10/23/nhung-cau-chuc-20-11-3.jpg",
   "https://i.pinimg.com/736x/3a/d1/10/3ad11028c6f7ca61bcd2816e6ead3979.jpg",
   "https://i.pinimg.com/736x/61/2b/f0/612bf089344f5775a3a32f1464cb147f.jpg"
 ]
-let texts=[
-  "Nhân ngày 20/11, chúc cô Thầy luôn mạnh khỏe!",
-  "Cảm ơn Thầy và Cô vì đã dạy dỗ chúng em!",
-  "Chúc Thầy Cô mãi hạnh phúc và thành công!"
-]
 
 let page=0
 let total=imgs.length
 let letter=document.getElementById("letter-img")
-let box=document.getElementById("pages")
 letter.style.backgroundImage=`url(${imgs[0]})`
 
-setTimeout(()=>{box.classList.add("show");box.innerHTML=texts[0]},3500)
-
-box.onclick=function(){
+document.getElementById("env").onclick=function(){
   page++
-  if(page>=total){box.classList.remove("show");return}
+  if(page>=total)page=0
   letter.style.backgroundImage=`url(${imgs[page]})`
-  box.innerHTML=texts[page]
 }
 
 const confettiCanvas=document.getElementById("confetti")
@@ -111,12 +91,7 @@ confettiCanvas.width=W;confettiCanvas.height=H
 let particles=[]
 
 for(let i=0;i<200;i++){
-  particles.push({
-    x:Math.random()*W,
-    y:Math.random()*H,
-    r:Math.random()*4+1,
-    d:Math.random()*200
-  })
+  particles.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*4+1,d:Math.random()*200})
 }
 
 function draw(){
